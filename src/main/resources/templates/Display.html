@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+	<script src="https://cdn.bootcss.com/qs/6.5.1/qs.min.js"></script>
+</head>
+<body>
+
+	<div id="select">
+		
+    <select v-model="selected" >
+		{{info}}
+		<option v-for="option in options" v-bind:value="option.value">
+			{{ option.text }}
+		</option>
+    </select>
+	<button id="add">添加</button>
+	<input v-model="message" V-bind:placeholder="placeholder">
+	<button name="changetype" v-on:click="changeType()">修改角色</button>
+	<br>
+	
+		<div :style="UserDisplay">
+			
+		<table border="1">
+		  <tr>
+			  
+			  <th>name</th>
+			  <th>pwd</th>
+			  <th>角色</th>
+		  </tr>	
+		  <form name="changeform" method="post" action="#" >
+		  <tr v-for="item in info" >
+			  
+		    
+				<td width="100"><input type="text" name="name" v-bind:value="item.UserName" readonly =“readonly”/></td>
+				<td width="100"><input type="text" name="pwd" v-bind:value="item.UserPwd" readonly =“readonly”/></td>
+				<td width="100"><input type="text" name="type" v-model:value="item.RoleType" :readonly="readonly ? 'readonly' : false "/>
+				</td>
+				<td width="100"><button id="change" v-on:click="changedata(item.UserName,item.RoleType)">修改</button></td>
+				<td width="100"><button name="delete" v-on:click="change(item.UserName)">删除</button></td>
+			
+		  </tr>
+		  </form>
+		</table>
+		</div>
+		<div :style="RoleDisplay">
+		<table border="1" >
+			<tr>
+						  
+						  <th width="100">角色</th>
+						  <th width="100">权限</th>
+						  
+			</tr>
+			<form name="changeform2" method="post" action="#" >
+			<tr v-for="item1 in info">
+				
+					<th width="100"><input type="text" name="name" v-bind:value="item1.RoleType" readonly =“readonly”/></th>
+					<th width="100"><input type="text" name="name" v-bind:value="item1.PmName" readonly =“none”/></th>
+					<th width="100"><button name="change" >修改</button></th>
+					<th width="100"><button name="delete" v-on:click="change2(item1.RoleType)">删除</button></th>
+				</form>
+			</tr>
+		</table>
+		</div>
+	</div>
+	
+	<script type = "text/javascript">
+		
+		var vm = new Vue({
+		el: '#select',
+		data :{
+				readonly : true,
+				placeholder:'请选择查询项',
+				message : null,
+				RoleDisplay: {display : 'none'},
+				UserDisplay: {display : 'none'},
+				info: null,
+				selected: 'A',
+				options: [
+				     { text: '用户信息', value: 'user' },
+				     { text: '角色信息', value: 'role' },
+				]
+				     
+		  
+			},
+			
+			methods:{
+				changedata:function(name,role){
+					console.log(name);
+					console.log(role);
+					let data = {
+						"name":name,
+						"role":role
+					}
+					axios
+					  .post('http://localhost:8081/Role/Update',window.Qs.stringify(data))
+					  .then(response => (this.info = response.data))
+					  .catch(function (error) { // 请求失败处理
+					    console.log(error);
+					  });
+					  window.location.reload();
+					  
+					
+					
+				},
+				
+				changeType:function(event){
+					this.readonly=false;
+				},
+				
+				change: function(UserName){
+					console.log(UserName);
+					let data = {
+						"name":UserName 
+					}
+					axios
+					  .post('http://localhost:8081/User/Delete',window.Qs.stringify(data))
+					  .then(response => (this.info = response.data))
+					  .catch(function (error) { // 请求失败处理
+					    console.log(error);
+					  });
+					  window.location.reload();
+					  alert("删除成功");
+				},
+				change2:function(RoleType){
+					let data = {
+						"type":RoleType 
+					}
+					axios
+					  .post('http://localhost:8081/Role/Delete',window.Qs.stringify(data))
+					  .then(response => (this.info = response.data))
+					  .catch(function (error) { // 请求失败处理
+					    console.log(error);
+					  });
+					  window.location.reload();
+					  alert("删除成功");
+				}
+			},
+			
+			
+			watch:{
+				
+				
+				
+				'message':function(newVal){  //查询信息
+					console.log(this.selected);
+					if(this.selected == "user"){
+						let data = {
+							"query":newVal
+						}
+						axios
+						  .post('http://localhost:8081/User/Query',window.Qs.stringify(data))
+						  .then(response => (this.info = response.data))
+						  .catch(function (error) { // 请求失败处理
+						    console.log(error);
+						  });
+					}else if(this.selected == "role"){
+						let data = {
+							"query":newVal
+						}
+						axios
+						  .post('http://localhost:8081/Role/Query',window.Qs.stringify(data))
+						  .then(response => (this.info = response.data))
+						  .catch(function (error) { // 请求失败处理
+						    console.log(error);
+						  });
+					}
+				},
+				
+				'selected':function(newVal){ //选项display
+					if(newVal == "user"){
+						this.placeholder = "查询用户";
+					}else if(newVal == "role"){
+						this.placeholder = "查询角色";
+					}
+					console.log(newVal);
+					
+					if(newVal == "user"){
+						this.UserDisplay.display = 'block';
+						this.RoleDisplay.display = 'none';
+						
+						let data = {
+							"option":newVal
+						}
+						
+						axios
+						  .post('http://localhost:8081/User/Display',window.Qs.stringify(data))
+						  .then(response => (this.info = response.data))
+						  .catch(function (error) { // 请求失败处理
+						    console.log(error);
+						  });
+					}else if(newVal == "role"){
+						this.UserDisplay.display = 'none';
+						this.RoleDisplay.display = 'block';
+						axios
+						  .post('http://localhost:8081/Role/Display',{
+											option:this.selected
+										})
+						  .then(response => (this.info = response.data))
+						  .catch(function (error) { // 请求失败处理
+						    console.log(error);
+						  });
+					}
+				},
+			}
+	  
+		})
+		
+		
+	</script>
+
+
+</body>
+</html>
