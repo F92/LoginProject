@@ -20,11 +20,12 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     public String Update(String name, String role) {
 
-        User user = userMapper.selectByUserName(name);
-        System.out.println(user.getUserId());
-        UserRoleRelation userRoleRelation = userRoleRelationMapper.selectByUserId(user.getUserId());
-        System.out.println(userRoleRelation.getRoleId());
-        roleMapper.updateByRoleId(userRoleRelation.getRoleId(),role);
+        int rid = roleMapper.selectByRoleType(role).getRoleId();
+        int uid = userMapper.selectByUserName(name).getUserId();
+
+        userRoleRelationMapper.updateByUserId(uid,rid);
+
+
 
         return "redirect:/View/Display";
     }

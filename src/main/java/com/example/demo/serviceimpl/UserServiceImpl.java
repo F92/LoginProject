@@ -70,7 +70,16 @@ public class UserServiceImpl implements UserService {
         return "redirect:/View/Display";
     }
 
+    @Override
+    public String Insert(String name, String pwd) {
 
+        userMapper.insertUser(name,pwd);
+        int id = userMapper.selectByUserName(name).getUserId();
+        userRoleRelationMapper.insertUserId(id);
+
+
+        return "redirect:/View/Display";
+    }
 
 
 }

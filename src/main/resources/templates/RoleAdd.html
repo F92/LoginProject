@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加角色</title>
+</head>
+<body>
+<h2>添加角色</h2>
+<form name="form" method="post" action="/Role/RoleAdd">
+    角色名：<input type="text" name="name"/> <br>
+    角色描述：<br><textarea name="description"></textarea><br>
+	权限：<select name="permission">
+		<option>1</option>
+		<option>2</option>
+		<option>3</option>
+		<option>4</option>
+	</select>
+	<br>
+    <input type="submit" name="submit" value="添加角色"/>
+</form>
+</body>
+</html>

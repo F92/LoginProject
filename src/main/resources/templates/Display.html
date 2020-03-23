@@ -17,7 +17,7 @@
 			{{ option.text }}
 		</option>
     </select>
-	<button id="add">添加</button>
+	<button id="add" v-on:click="add()">添加</button>
 	<input v-model="message" V-bind:placeholder="placeholder">
 	<button name="changetype" v-on:click="changeType()">修改角色</button>
 	<br>
@@ -37,7 +37,14 @@
 		    
 				<td width="100"><input type="text" name="name" v-bind:value="item.UserName" readonly =“readonly”/></td>
 				<td width="100"><input type="text" name="pwd" v-bind:value="item.UserPwd" readonly =“readonly”/></td>
-				<td width="100"><input type="text" name="type" v-model:value="item.RoleType" :readonly="readonly ? 'readonly' : false "/>
+				<td width="100">
+					<select name = "type" :disabled="disabled?'disabled':false" v-model="item.RoleType">
+						<option v-for="item2 in RoleInfo" v-bind:value="item2.RoleType">
+							{{item2.RoleType}}
+						</option>
+						
+						
+					</select>
 				</td>
 				<td width="100"><button id="change" v-on:click="changedata(item.UserName,item.RoleType)">修改</button></td>
 				<td width="100"><button name="delete" v-on:click="change(item.UserName)">删除</button></td>
@@ -58,8 +65,7 @@
 			<tr v-for="item1 in info">
 				
 					<th width="100"><input type="text" name="name" v-bind:value="item1.RoleType" readonly =“readonly”/></th>
-					<th width="100"><input type="text" name="name" v-bind:value="item1.PmName" readonly =“none”/></th>
-					<th width="100"><button name="change" >修改</button></th>
+					<th width="100"><input type="text" name="name" v-bind:value="item1.PmName" readonly =“readonly”/></th>
 					<th width="100"><button name="delete" v-on:click="change2(item1.RoleType)">删除</button></th>
 				</form>
 			</tr>
@@ -72,13 +78,15 @@
 		var vm = new Vue({
 		el: '#select',
 		data :{
-				readonly : true,
+				disabled : true,
 				placeholder:'请选择查询项',
 				message : null,
 				RoleDisplay: {display : 'none'},
 				UserDisplay: {display : 'none'},
 				info: null,
+				RoleInfo:null,
 				selected: 'A',
+				roleselect:'',
 				options: [
 				     { text: '用户信息', value: 'user' },
 				     { text: '角色信息', value: 'role' },
@@ -88,7 +96,16 @@
 			},
 			
 			methods:{
-				changedata:function(name,role){
+				add:function(event){ //添加用户或者角色
+					console.log(this.selected);
+					if(this.selected == "user"){
+						window.location="/View/UserAdd";
+					}else if(this.selected == "role"){
+						window.location="/View/RoleAdd";
+					}
+				},
+				
+				changedata:function(name,role){ //修改用户角色
 					console.log(name);
 					console.log(role);
 					let data = {
@@ -102,16 +119,16 @@
 					    console.log(error);
 					  });
 					  window.location.reload();
-					  
+					  alter("修改成功");
 					
 					
 				},
 				
 				changeType:function(event){
-					this.readonly=false;
+					this.disabled=false;
 				},
 				
-				change: function(UserName){
+				change: function(UserName){ //删除用户
 					console.log(UserName);
 					let data = {
 						"name":UserName 
@@ -125,7 +142,7 @@
 					  window.location.reload();
 					  alert("删除成功");
 				},
-				change2:function(RoleType){
+				change2:function(RoleType){ //删除角色
 					let data = {
 						"type":RoleType 
 					}
@@ -145,7 +162,7 @@
 				
 				
 				
-				'message':function(newVal){  //查询信息
+				'message':function(newVal){  //查询
 					console.log(this.selected);
 					if(this.selected == "user"){
 						let data = {
@@ -170,7 +187,7 @@
 					}
 				},
 				
-				'selected':function(newVal){ //选项display
+				'selected':function(newVal){ //显示用户信息或者角色信息
 					if(newVal == "user"){
 						this.placeholder = "查询用户";
 					}else if(newVal == "role"){
@@ -192,6 +209,14 @@
 						  .catch(function (error) { // 请求失败处理
 						    console.log(error);
 						  });
+						  
+						axios
+						  .post('http://localhost:8081/Role/Info')
+						  .then(response => (this.RoleInfo = response.data))
+						  .catch(function (error) { // 请求失败处理
+						    console.log(error);
+						  });
+						  
 					}else if(newVal == "role"){
 						this.UserDisplay.display = 'none';
 						this.RoleDisplay.display = 'block';

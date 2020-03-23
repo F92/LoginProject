@@ -1,8 +1,10 @@
 package com.example.demo.serviceimpl;
 
+import com.example.demo.dao.PermissionMapper;
 import com.example.demo.dao.RoleMapper;
 import com.example.demo.dao.RolePermissionRelationMapper;
 import com.example.demo.dao.UserMapper;
+import com.example.demo.domain.Permission;
 import com.example.demo.domain.Role;
 import com.example.demo.domain.RolePermission;
 import com.example.demo.domain.User;
@@ -19,6 +21,8 @@ public class RoleServiceImpl implements RoleService {
     RoleMapper roleMapper;
     @Autowired(required = false)
     RolePermissionRelationMapper rolePermission;
+    @Autowired(required = false)
+    PermissionMapper permissionMapper;
     @Override
     public String Display() {
         ArrayList<RolePermission> rolePermissions = new ArrayList<>();
@@ -49,4 +53,26 @@ public class RoleServiceImpl implements RoleService {
 
         return "redirect:/View/Display";
     }
+
+    @Override
+    public String Insert(String type, String ds, String pm) {
+
+        roleMapper.insertRole(type,ds);
+        int roleid = roleMapper.selectByRoleType(type).getRoleId();
+        int pmid = permissionMapper.selectByPmName(pm).getPmId();
+        rolePermission.insertRoleId(roleid,pmid);
+        return "redirect:/View/Display";
+    }
+
+    @Override
+    public String Info() {
+
+        ArrayList<Role> role = new ArrayList<>();
+        role = roleMapper.selectAllRole();
+        Gson gson = new Gson();
+        String info = gson.toJson(role);
+        return info;
+    }
+
+
 }

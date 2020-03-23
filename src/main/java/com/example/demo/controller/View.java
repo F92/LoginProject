@@ -28,4 +28,14 @@ public class View {
 
         return "Display";
     }
+    @RequestMapping("/UserAdd")
+    public String UserAdd(){
+
+        return "UserAdd";
+    }
+    @RequestMapping("/RoleAdd")
+    public String RoleAdd(){
+
+        return "RoleAdd";
+    }
 }

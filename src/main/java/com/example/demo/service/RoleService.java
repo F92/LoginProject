@@ -7,5 +7,8 @@ public interface RoleService {
 
     String Delete(String type);
 
+    String Insert(String type,String ds,String pm);
+
+    String Info();
 
 }

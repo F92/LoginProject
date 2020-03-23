@@ -4,6 +4,7 @@ import com.example.demo.service.RoleService;
 import com.example.demo.service.UserRoleService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -54,8 +55,28 @@ public class RoleController {
         String a = request.getParameter("name");
         String r = request.getParameter("role");
 
+        System.out.println(a+r);
+
         String s = userRoleService.Update(a,r);
 
         return "redirect:/View/Display";
+    }
+
+    @RequestMapping(value = "/RoleAdd")
+    public String RoleAdd(HttpServletRequest request){
+        String name = request.getParameter("name");
+        String ds = request.getParameter("description");
+        String pm = request.getParameter("permission");
+        System.out.println(name+ds+pm);
+
+        return roleService.Insert(name,ds,pm);
+    }
+
+    @RequestMapping(value = "/Info")
+    public void Info(HttpServletResponse response) throws IOException {
+        String info = roleService.Info();
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(info);
     }
 }

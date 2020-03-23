@@ -41,10 +41,10 @@ public class UserController {
         user.setUserName(n);
 
         String result = userService.Login(user);
-        if(result.equals("false")){
-                            //传失败数据
+        if (result.equals("false")) {
+            //传失败数据
             return "redirect:/View/Login";  //false
-        }else{
+        } else {
             return result;  //success
         }
 
@@ -76,6 +76,19 @@ public class UserController {
         String a = request.getParameter("name");
         return userService.Delete(a);
     }
+
+    @RequestMapping(value = "/UserAdd")
+    public String UserAdd(HttpServletRequest request){
+        String name = request.getParameter("name");
+        String pwd = request.getParameter("pwd");
+        System.out.println(name+pwd);
+
+
+
+        return userService.Insert(name,pwd);
+    }
+
+
 
 
 }

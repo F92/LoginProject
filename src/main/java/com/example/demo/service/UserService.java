@@ -14,5 +14,5 @@ public interface UserService {
 
     String Delete(String name);
 
-
+    String Insert(String name,String pwd);
 }
